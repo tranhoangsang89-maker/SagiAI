@@ -36,9 +36,54 @@ export default function MessageBubble({ content, role }: MessageBubbleProps) {
         )}
       >
         <div className="prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900/50 prose-pre:border prose-pre:border-slate-700 prose-pre:backdrop-blur-md prose-code:text-blue-300">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm]}
+            components={{
+              img: ({ node, ...props }) => {
+                const isQR = props.alt?.toLowerCase().includes('qr') || props.src?.toLowerCase().includes('qr') || props.alt?.toLowerCase().includes('zalo') || props.src?.toLowerCase().includes('zalo');
+                
+                if (isQR) {
+                  return (
+                    <div className="max-w-[260px] mx-auto bg-slate-900/90 border border-slate-700/80 rounded-2xl p-4 text-center shadow-xl mt-3 mb-2">
+                      <div className="text-xs text-orange-400 font-semibold tracking-wider mb-2">KẾT NỐI TRỰC TIẾP VỚI ANH SANG</div>
+                      <div className="flex justify-center">
+                        <img 
+                          {...props} 
+                          className="w-36 h-36 rounded-xl p-2 bg-white object-contain" 
+                        />
+                      </div>
+                      <a 
+                        href="https://zalo.me/0888003205" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="w-full mt-3 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all no-underline"
+                      >
+                        💬 Nhắn Zalo 0888.003.205
+                      </a>
+                    </div>
+                  );
+                }
+                
+                return <img {...props} className="rounded-xl max-w-full shadow-lg" />;
+              }
+            }}
+          >
             {content}
           </ReactMarkdown>
+          
+          {!isUser && !(content.match(/!\[.*?(qr|zalo).*?\]\(.*?\)/i) || content.match(/!\[.*?\]\(.*?(qr|zalo).*?\)/i)) && (content.toLowerCase().includes('liên hệ') || content.toLowerCase().includes('zalo') || content.includes('0888')) && (
+            <div className="mt-4 border-t border-slate-700/50 pt-3">
+              <a 
+                href="https://zalo.me/0888003205" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-500/20 no-underline"
+              >
+                <span className="text-lg">💬</span>
+                <span>Nhắn Zalo trực tiếp với anh Sang</span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
 

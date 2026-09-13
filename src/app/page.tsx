@@ -3,16 +3,16 @@ import { useState, useRef, useEffect } from 'react';
 import MessageBubble from '@/components/MessageBubble';
 import ChatInput from '@/components/ChatInput';
 import TypingIndicator from '@/components/TypingIndicator';
-import { Sparkles, Settings, MoreVertical } from 'lucide-react';
+import { Sparkles, Settings, MoreVertical, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const INITIAL_MESSAGE = { 
+  role: 'assistant', 
+  content: 'Dạ chào anh/chị! Em là Sagi – trợ lý số đại diện thương hiệu Sang Citizen do anh Trần Hoàng Sang phát triển.\n\nEm có thể hỗ trợ anh/chị tìm hiểu về các giải pháp Web App tự động hóa, Chatbot AI chăm sóc khách hàng 24/7 và dịch vụ sản xuất Mascot/Video Ads bằng AI. Anh/chị đang quan tâm giải pháp nào cho doanh nghiệp của mình ạ?' 
+};
+
 export default function Home() {
-  const [messages, setMessages] = useState([
-    { 
-      role: 'assistant', 
-      content: 'Dạ chào anh/chị! Em là Sagi – trợ lý số đại diện thương hiệu Sang Citizen do anh Trần Hoàng Sang phát triển.\n\nEm có thể hỗ trợ anh/chị tìm hiểu về các giải pháp Web App tự động hóa, Chatbot AI chăm sóc khách hàng 24/7 và dịch vụ sản xuất Mascot/Video Ads bằng AI. Anh/chị đang quan tâm giải pháp nào cho doanh nghiệp của mình ạ?' 
-    }
-  ]);
+  const [messages, setMessages] = useState([INITIAL_MESSAGE]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -23,6 +23,10 @@ export default function Home() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  const handleReset = () => {
+    setMessages([INITIAL_MESSAGE]);
+  };
 
   const handleSend = async (text: string) => {
     const newMessages = [...messages, { role: 'user', content: text }];
@@ -65,6 +69,17 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center space-x-2 text-slate-400">
+            <a 
+              href="https://portfolio-tranhoangsang89.vercel.app/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 rounded-full text-xs font-medium transition-colors border border-blue-500/30 mr-2"
+            >
+              <span>🌐 Xem Portfolio & 8 Case Studies</span>
+            </a>
+            <button onClick={handleReset} className="p-2 hover:text-rose-400 hover:bg-rose-500/10 rounded-full transition-all" title="Làm mới trò chuyện">
+              <Trash2 size={20} />
+            </button>
             <button className="p-2 hover:text-white hover:bg-white/5 rounded-full transition-all">
               <Settings size={20} />
             </button>
@@ -82,18 +97,23 @@ export default function Home() {
                 <MessageBubble key={idx} role={msg.role as 'user'|'assistant'} content={msg.content} />
               ))}
               
-              {messages.length === 1 && !isLoading && (
+              {!isLoading && messages[messages.length - 1]?.role === 'assistant' && (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                   className="flex flex-col gap-2.5 mt-2 max-w-[90%] md:max-w-[75%]"
                 >
-                  {[
+                  {(messages.length === 1 ? [
                     "Sang Citizen có những giải pháp tự động hóa & Web App nào?",
                     "Chi phí và quy trình làm một Chatbot AI 24/7 như thế nào?",
                     "Tôi muốn xem qua các Case Study thực tế."
-                  ].map((suggestion, i) => (
+                  ] : [
+                    "Xem bảng giá các dịch vụ",
+                    "Xem ảnh Mascot Sagi",
+                    "Quy trình làm việc như thế nào?",
+                    "Tôi muốn liên hệ trực tiếp"
+                  ]).map((suggestion, i) => (
                     <button
                       key={i}
                       onClick={() => handleSend(suggestion)}
