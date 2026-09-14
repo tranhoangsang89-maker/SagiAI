@@ -16,20 +16,28 @@ export async function POST(req: Request) {
     // Check for phone number in the last user message for Lead notification
     const lastUserMessage = [...messages].reverse().find((msg: any) => msg.role === 'user');
     if (lastUserMessage) {
-      const phoneRegex = /(?:0|\+84)[35789]\d{8}\b/g;
+      const phoneRegex = /(?:0|\+84)[\s.-]*[35789](?:[\s.-]*\d){8}\b/g;
       const matches = lastUserMessage.content.match(phoneRegex);
       if (matches && matches.length > 0) {
         console.log(`\n🔔 [LEAD ALERT] Có khách vừa để lại SĐT: ${matches.join(', ')} trên Sagi AI!`);
-        // TODO: Cấu hình webhook gửi tin nhắn về Telegram hoặc lưu vào Google Sheets tại đây
-        // Ví dụ Telegram:
-        // await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({
-        //     chat_id: process.env.TELEGRAM_CHAT_ID,
-        //     text: `🔔 Khách hàng trên Sagi AI vừa để lại SĐT: ${matches.join(', ')}`
-        //   })
-        // });
+        
+        // Bắn thông báo về Telegram nếu có cấu hình Token
+        if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) {
+          try {
+            await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: process.env.TELEGRAM_CHAT_ID,
+                text: `🔥 [Sagi AI] CÓ KHÁCH HÀNG ĐỂ LẠI SỐ ĐIỆN THOẠI 🔥\n\n📞 Số Zalo/Phone: ${matches.join(', ')}\n💬 Nội dung chat gần nhất: "${lastUserMessage.content}"\n\nAnh Sang vào liên hệ chốt khách ngay nhé! 🚀`,
+                parse_mode: 'HTML'
+              })
+            });
+            console.log('✅ Đã gửi thông báo Lead qua Telegram thành công!');
+          } catch (err) {
+            console.error('❌ Lỗi gửi thông báo Telegram:', err);
+          }
+        }
       }
     }
 
