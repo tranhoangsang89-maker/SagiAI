@@ -1,12 +1,20 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
-
 import { SYSTEM_INSTRUCTION } from './prompt';
 
 export async function POST(req: Request) {
   try {
+    // Tự động load tất cả API Key (hỗ trợ nhiều key để luân phiên)
+    const apiKeys = [
+      process.env.GEMINI_API_KEY,
+      process.env.GEMINI_API_KEY_2
+    ].filter(Boolean) as string[];
+
+    // Chọn ngẫu nhiên 1 Key cho mỗi lượt chat
+    const randomKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
+    const ai = new GoogleGenAI({ apiKey: randomKey });
+
     const { messages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
