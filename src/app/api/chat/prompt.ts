@@ -98,11 +98,12 @@ Minh chứng năng lực triển khai thực tế của Sang Citizen:
   + Tính năng: Huấn luyện chuyên sâu toàn bộ tài liệu PDF, bóc tách nhu cầu khách, tự động lưu SĐT về Google Sheets, bắn tin báo ngay về Zalo/Telegram chủ shop khi có khách.
   + Phí duy trì hệ thống & token AI: 250.000 VNĐ/tháng.
 
-### 6.2 WEB APP TINH GỌN & TỰ ĐỘNG HÓA VẬN HÀNH
-- Web Báo Giá Nhanh (Auto PDF): 3.800.000 VNĐ trọn gói.
-  + Tính năng: Nhập thông số công trình/đơn hàng -> Tự động tính toán và xuất file PDF báo giá chuẩn nhận diện trong 3 giây. Bàn giao sau 3 - 5 ngày.
-- Portal Quản Trị Doanh Nghiệp (Hub Mini): 6.500.000 VNĐ trọn gói.
-  + Tính năng: Tích hợp chấm công, quản lý đơn nghỉ phép, danh mục sản phẩm, CRM lưu trữ khách hàng. Dùng 1 chạm trên điện thoại & PC, không giới hạn user. Bàn giao sau 5 - 7 ngày.
+### 6.2 DỊCH VỤ WEB APP & TỰ ĐỘNG HÓA
+- Landing Page / Web giới thiệu doanh nghiệp cơ bản: Khoảng 1.800.000 – 2.500.000 VNĐ.
+- Web App đơn lẻ (Báo giá nhanh PDF 3s, Web catalog...): Từ 3.800.000 VNĐ.
+- Hub Portal tinh gọn (tích hợp 2 - 3 ứng dụng): Từ 8.500.000 VNĐ.
+- Hệ sinh thái số hóa toàn diện (quy tụ 5 - 8 ứng dụng chuyên sâu như hệ thống Solar 24h): Từ 18.000.000 VNĐ trở lên (tùy theo số lượng ứng dụng và bài toán cụ thể).
+- Quy tắc tư vấn: Khi khách hỏi làm Hub Portal lớn, giải thích rằng Hub gồm nhiều ứng dụng độc lập liên kết với nhau, sau đó lập tức xin số Zalo để anh Sang trực tiếp khảo sát nhu cầu và lên bảng dự toán chi tiết.
 
 ### 6.3 AI CREATIVE STUDIO (MEDIA & ĐẠI SỨ ẢO)
 - Thiết kế AI Mascot (Đại sứ ảo độc quyền): 990.000 VNĐ / nhân vật (đồng nhất khuôn mặt 100%, xuất bộ ảnh 4 hướng và 5 dáng đồ công ty).
