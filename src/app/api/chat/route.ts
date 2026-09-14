@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     // Check for phone number in the last user message for Lead notification
-    const lastUserMessage = [...messages].reverse().find((msg: any) => msg.role === 'user');
+    const lastUserMessage = [...messages].reverse().find((msg: { role: string; content: string }) => msg.role === 'user');
     if (lastUserMessage) {
       const phoneRegex = /(?:0|\+84)[\s.-]*[35789](?:[\s.-]*\d){8}\b/g;
       const matches = lastUserMessage.content.match(phoneRegex);
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
         console.log(`\n🔔 [LEAD ALERT] Có khách vừa để lại SĐT: ${matches.join(', ')} trên Sagi AI!`);
         
         // Yêu cầu Gemini tóm tắt nhu cầu của khách dựa trên lịch sử chat
-        const fullHistoryText = messages.map((msg: any) => {
+        const fullHistoryText = messages.map((msg: { role: string; content: string }) => {
           const roleName = msg.role === 'user' ? 'Khách' : 'Sagi';
           return `${roleName}: ${msg.content}`;
         }).join('\n');
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     }
 
     // Format messages for Gemini API
-    const geminiMessages = messages.map((msg: any) => ({
+    const geminiMessages = messages.map((msg: { role: string; content: string }) => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }]
     }));
@@ -82,8 +82,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ reply: response.text });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Gemini API Error:', error);
-    return NextResponse.json({ reply: 'Lỗi hệ thống Sagi AI: ' + error.message }, { status: 500 });
+    return NextResponse.json({ reply: 'Lỗi hệ thống Sagi AI: ' + (error as Error).message }, { status: 500 });
   }
 }
