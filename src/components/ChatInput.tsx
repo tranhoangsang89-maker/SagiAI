@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Send, Paperclip } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ChatInputProps {
@@ -38,9 +38,7 @@ export default function ChatInput({ onSend, isLoading }: ChatInputProps) {
 
   return (
     <div className="w-full glass-panel rounded-2xl p-2 flex items-end relative overflow-hidden transition-all focus-within:ring-1 focus-within:ring-blue-500/50 shadow-xl">
-      <button className="p-3 text-slate-400 hover:text-blue-400 transition-colors flex-shrink-0">
-        <Paperclip size={20} />
-      </button>
+
       <textarea
         ref={textareaRef}
         value={input}

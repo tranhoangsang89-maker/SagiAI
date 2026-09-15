@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { Sparkles, User } from 'lucide-react';
@@ -9,10 +10,30 @@ import remarkGfm from 'remark-gfm';
 interface MessageBubbleProps {
   content: string;
   role: 'user' | 'assistant';
+  isNew?: boolean;
 }
 
-export default function MessageBubble({ content, role }: MessageBubbleProps) {
+import LeadForm from './LeadForm';
+
+export default function MessageBubble({ content, role, isNew }: MessageBubbleProps) {
   const isUser = role === 'user';
+  const [displayedContent, setDisplayedContent] = useState(isNew && !isUser ? '' : content);
+
+  useEffect(() => {
+    if (isNew && !isUser) {
+      if (displayedContent.length < content.length) {
+        const timeout = setTimeout(() => {
+          setDisplayedContent(content.slice(0, displayedContent.length + 3));
+        }, 10);
+        return () => clearTimeout(timeout);
+      }
+    } else {
+      setDisplayedContent(content);
+    }
+  }, [content, displayedContent, isNew, isUser]);
+  
+  const showLeadForm = !isUser && (content.includes('[LEAD_FORM]') || content.toLowerCase().includes('báo giá chi tiết') || content.toLowerCase().includes('để lại thông tin'));
+
   
   return (
     <motion.div
@@ -68,7 +89,7 @@ export default function MessageBubble({ content, role }: MessageBubbleProps) {
               }
             }}
           >
-            {content}
+            {displayedContent}
           </ReactMarkdown>
           
           {!isUser && !(content.match(/!\[.*?(qr|zalo).*?\]\(.*?\)/i) || content.match(/!\[.*?\]\(.*?(qr|zalo).*?\)/i)) && (content.toLowerCase().includes('liên hệ') || content.toLowerCase().includes('zalo') || content.includes('0888')) && (
@@ -82,6 +103,12 @@ export default function MessageBubble({ content, role }: MessageBubbleProps) {
                 <span className="text-lg">💬</span>
                 <span>Nhắn Zalo trực tiếp với anh Sang</span>
               </a>
+            </div>
+          )}
+          
+          {showLeadForm && displayedContent.length === content.length && (
+            <div className="mt-4 pt-3 border-t border-slate-700/50">
+              <LeadForm />
             </div>
           )}
         </div>

@@ -3,8 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import MessageBubble from '@/components/MessageBubble';
 import ChatInput from '@/components/ChatInput';
 import TypingIndicator from '@/components/TypingIndicator';
-import { Sparkles, Settings, MoreVertical, Trash2 } from 'lucide-react';
+import { Sparkles, Settings, MoreVertical, Trash2, Rocket } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import clsx from 'clsx';
 
 const INITIAL_MESSAGE = { 
   role: 'assistant', 
@@ -21,6 +22,16 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const saved = localStorage.getItem('sagi-chat-messages');
+    if (saved) {
+      try {
+        setMessages(JSON.parse(saved));
+      } catch (e) {}
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('sagi-chat-messages', JSON.stringify(messages.map(m => ({ ...m, isNew: false }))));
     scrollToBottom();
   }, [messages, isLoading]);
 
@@ -41,9 +52,9 @@ export default function Home() {
       });
       
       const data = await response.json();
-      setMessages([...newMessages, { role: 'assistant', content: data.reply }]);
+      setMessages([...newMessages, { role: 'assistant', content: data.reply, isNew: true }]);
     } catch (error) {
-      setMessages([...newMessages, { role: 'assistant', content: 'Lỗi mạng: Không thể kết nối với Sagi AI.' }]);
+      setMessages([...newMessages, { role: 'assistant', content: 'Lỗi mạng: Không thể kết nối với Sagi AI.', isNew: true }]);
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +68,7 @@ export default function Home() {
         {/* Header */}
         <header className="w-full h-18 border-b border-white/10 flex items-center justify-between px-4 md:px-6 py-4 flex-shrink-0 z-20 bg-slate-900/60 backdrop-blur-xl">
           <div className="flex items-center space-x-3">
-            <div className="w-11 h-11 rounded-2xl bg-slate-800 flex items-center justify-center shadow-lg shadow-blue-500/30 overflow-hidden border border-white/10">
+            <div className={clsx("w-11 h-11 rounded-2xl bg-slate-800 flex items-center justify-center shadow-lg shadow-blue-500/30 overflow-hidden border border-white/10 transition-all", isLoading && "shadow-[0_0_15px_rgba(59,130,246,0.6)] animate-pulse")}>
               <img src="/avatar.jpeg" alt="Sagi Avatar" className="w-full h-full object-cover" />
             </div>
             <div>
@@ -80,12 +91,14 @@ export default function Home() {
             <button onClick={handleReset} className="p-2 hover:text-rose-400 hover:bg-rose-500/10 rounded-full transition-all" title="Làm mới trò chuyện">
               <Trash2 size={20} />
             </button>
-            <button className="p-2 hover:text-white hover:bg-white/5 rounded-full transition-all">
-              <Settings size={20} />
-            </button>
-            <button className="p-2 hover:text-white hover:bg-white/5 rounded-full transition-all">
-              <MoreVertical size={20} />
-            </button>
+            <a 
+              href="https://zalo.me/0888003205" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="ml-2 flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-xs font-semibold transition-all shadow-lg shadow-blue-500/30 no-underline"
+            >
+              <span>💬 Chat với chuyên gia</span>
+            </a>
           </div>
         </header>
 
@@ -94,7 +107,7 @@ export default function Home() {
           <div className="flex flex-col space-y-6 min-h-full justify-end pb-2">
             <AnimatePresence>
               {messages.map((msg, idx) => (
-                <MessageBubble key={idx} role={msg.role as 'user'|'assistant'} content={msg.content} />
+                <MessageBubble key={idx} role={msg.role as 'user'|'assistant'} content={msg.content} isNew={(msg as any).isNew} />
               ))}
               
               {!isLoading && messages[messages.length - 1]?.role === 'assistant' && (
@@ -104,16 +117,20 @@ export default function Home() {
                   transition={{ delay: 0.3 }}
                   className="flex flex-col gap-2.5 mt-2 max-w-[90%] md:max-w-[75%]"
                 >
-                  {(messages.length === 1 ? [
-                    "Sang Citizen có những giải pháp tự động hóa & Web App nào?",
-                    "Chi phí và quy trình làm một Chatbot AI 24/7 như thế nào?",
-                    "Tôi muốn xem qua các Case Study thực tế."
-                  ] : [
-                    "Xem bảng giá các dịch vụ",
-                    "Xem ảnh Mascot Sagi",
-                    "Quy trình làm việc như thế nào?",
-                    "Tôi muốn liên hệ trực tiếp"
-                  ]).map((suggestion, i) => (
+                  {(() => {
+                    if (messages.length === 1) return [
+                      "Sang Citizen có những giải pháp tự động hóa & Web App nào?",
+                      "Chi phí và quy trình làm một Chatbot AI 24/7 như thế nào?",
+                      "Tôi muốn xem qua các Case Study thực tế."
+                    ];
+                    
+                    const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.content.toLowerCase() || '';
+                    if (lastUserMsg.includes('web')) return ["Chi phí duy trì hàng năm?", "Thời gian làm web là bao lâu?", "Xem các mẫu web đã làm"];
+                    if (lastUserMsg.includes('chatbot') || lastUserMsg.includes('ai')) return ["Chatbot làm được những gì?", "Báo giá Chatbot cơ bản", "Tích hợp Chatbot vào Zalo/Fanpage?"];
+                    if (lastUserMsg.includes('video') || lastUserMsg.includes('mascot')) return ["Cho tôi xem video mẫu", "Chi phí làm 1 video ngắn", "Quy trình tạo Mascot"];
+                    
+                    return ["Xem bảng giá các dịch vụ", "Quy trình làm việc như thế nào?", "Tôi muốn liên hệ trực tiếp"];
+                  })().map((suggestion, i) => (
                     <button
                       key={i}
                       onClick={() => handleSend(suggestion)}
@@ -143,8 +160,8 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <ChatInput onSend={handleSend} isLoading={isLoading} />
             <p className="text-center text-[11px] text-slate-500 mt-3 font-medium flex items-center justify-center space-x-1">
-              <Sparkles size={12} />
-              <span>Sagi AI có thể mắc lỗi. Hãy kiểm tra các thông tin báo giá và hệ thống.</span>
+              <Rocket size={12} />
+              <span>Được phát triển bởi Sang Citizen.</span>
             </p>
           </div>
         </div>
