@@ -12,8 +12,14 @@ const INITIAL_MESSAGE = {
   content: 'Dạ chào anh/chị! Em là Sagi – trợ lý số đại diện thương hiệu Sang Citizen do anh Trần Hoàng Sang phát triển.\n\nEm có thể hỗ trợ anh/chị tìm hiểu về các giải pháp Web App tự động hóa, Chatbot AI chăm sóc khách hàng 24/7 và dịch vụ sản xuất Mascot/Video Ads bằng AI. Anh/chị đang quan tâm giải pháp nào cho doanh nghiệp của mình ạ?' 
 };
 
+type MessageType = {
+  role: string;
+  content: string;
+  isNew?: boolean;
+};
+
 export default function Home() {
-  const [messages, setMessages] = useState([INITIAL_MESSAGE]);
+  const [messages, setMessages] = useState<MessageType[]>([INITIAL_MESSAGE]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
